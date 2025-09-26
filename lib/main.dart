@@ -1,11 +1,17 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'firebase_options.dart';
 
-void main() {
-  runApp(const PortfolioApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  runApp(PortfolioApp());
 }
 
 class _Theme {
@@ -22,7 +28,7 @@ class _Theme {
 }
 
 class PortfolioApp extends StatelessWidget {
-  const PortfolioApp({super.key});
+  PortfolioApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -552,111 +558,185 @@ class ProcessCard extends StatelessWidget {
 }
 
 class ContactFormSection extends StatelessWidget {
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _messageController = TextEditingController();
+
+  final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
       return Padding(
         padding: EdgeInsets.symmetric(
             horizontal: constraints.maxWidth > 1000 ? 400 : 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _buildTextField('Name'),
-            const SizedBox(height: 16),
-            _buildTextField('Email'),
-            const SizedBox(height: 16),
-            _buildTextField('Message', maxLines: 4),
-            const SizedBox(height: 24),
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [_Theme.headlineColor2, _Theme.headlineColor1],
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              TextFormField(
+                  controller: _nameController,
+                  maxLines: 1,
+                  decoration: InputDecoration(
+                    hintText: "Name",
+                    hintStyle: const TextStyle(color: _Theme.textColor),
+                    filled: true,
+                    fillColor: _Theme.cardColor,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please Enter The Name";
+                    }
+                  }),
+              const SizedBox(height: 16),
+              TextFormField(
+                  controller: _emailController,
+                  maxLines: 1,
+                  decoration: InputDecoration(
+                    hintText: "Email",
+                    hintStyle: const TextStyle(color: _Theme.textColor),
+                    filled: true,
+                    fillColor: _Theme.cardColor,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please Enter The Email";
+                    }
+                  }),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _messageController,
+                maxLines: 4,
+                decoration: InputDecoration(
+                  hintText: "Message",
+                  hintStyle: const TextStyle(color: _Theme.textColor),
+                  filled: true,
+                  fillColor: _Theme.cardColor,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
-                borderRadius: BorderRadius.circular(8),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Please Enter The Message";
+                  }
+                },
               ),
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  shadowColor: Colors.transparent,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+              const SizedBox(height: 24),
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [_Theme.headlineColor2, _Theme.headlineColor1],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: ElevatedButton(
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      try {
+                        await FirebaseFirestore.instance
+                            .collection('user_responses')
+                            .add({
+                          'name': _nameController.text,
+                          'mail': _emailController.text,
+                          'message': _messageController.text,
+                          'timestamp': FieldValue.serverTimestamp(),
+                        });
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Response saved successfully!')),
+                        );
+                        _nameController.clear();
+                        _messageController.clear();
+                        _emailController.clear();
+                      } on FirebaseException catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text('Error saving data: ${e.message}')),
+                        );
+                      }
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    shadowColor: Colors.transparent,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text('Send Message',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold)),
+                ),
+              ),
+              const SizedBox(height: 20),
+              OutlinedButton(
+                onPressed: () {
+                  _launchUrl(
+                      "https://github.com/amithe05/my_portfolio/raw/main/assets/Amith.E - Flutter Developer.pdf");
+                },
+                style: OutlinedButton.styleFrom(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  side: const BorderSide(color: _Theme.textColor, width: 1),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Text('Send Message',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold)),
+                child: const Text('View Resume',
+                    style: TextStyle(color: _Theme.textColor)),
               ),
-            ),
-            const SizedBox(height: 20),
-            OutlinedButton(
-              onPressed: () {},
-              style: OutlinedButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                side: const BorderSide(color: _Theme.textColor, width: 1),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: const Text('View Resume',
-                  style: TextStyle(color: _Theme.textColor)),
-            ),
-            const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                GestureDetector(
-                  onTap: () => _launchUrl("https://github.com/amithe05"),
-                  child: Image.asset(
-                    "github.png",
-                    height: 50,
-                    width: 50,
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: () => _launchUrl("https://github.com/amithe05"),
+                    child: Image.asset(
+                      "github.png",
+                      height: 50,
+                      width: 50,
+                    ),
                   ),
-                ),
-                GestureDetector(
-                  onTap: () => _launchUrl(
-                      "https://www.linkedin.com/in/amith-e-103687234/"),
-                  child: Image.asset(
-                    "linkedin.png",
-                    height: 40,
-                    width: 40,
+                  GestureDetector(
+                    onTap: () => _launchUrl(
+                        "https://www.linkedin.com/in/amith-e-103687234/"),
+                    child: Image.asset(
+                      "linkedin.png",
+                      height: 40,
+                      width: 40,
+                    ),
                   ),
-                ),
-                GestureDetector(
-                  onTap: () => _launchUrl("https://x.com/amithe05"),
-                  child: Image.asset(
-                    "twitter.png",
-                    height: 50,
-                    width: 50,
+                  GestureDetector(
+                    onTap: () => _launchUrl("https://x.com/amithe05"),
+                    child: Image.asset(
+                      "twitter.png",
+                      height: 50,
+                      width: 50,
+                    ),
                   ),
-                ),
-              ],
-            )
-          ],
+                ],
+              )
+            ],
+          ),
         ),
       );
     });
-  }
-
-  Widget _buildTextField(String hint, {int maxLines = 1}) {
-    return TextField(
-      maxLines: maxLines,
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: const TextStyle(color: _Theme.textColor),
-        filled: true,
-        fillColor: _Theme.cardColor,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide.none,
-        ),
-      ),
-    );
   }
 }
 

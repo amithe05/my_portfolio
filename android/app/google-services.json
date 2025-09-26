@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "233316288461",
+    "project_id": "personal-portfolio-d68ab",
+    "storage_bucket": "personal-portfolio-d68ab.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:233316288461:android:2ae221dc2d7f720cbae684",
+        "android_client_info": {
+          "package_name": "com.example.personal_portfolio"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAqgYztPIxNLLSaSenYSo0KJ4k45phTXqw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
