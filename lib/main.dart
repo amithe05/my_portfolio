@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -9,7 +8,6 @@ import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(PortfolioApp());
 }
@@ -28,7 +26,7 @@ class _Theme {
 }
 
 class PortfolioApp extends StatelessWidget {
-  PortfolioApp({super.key});
+  const PortfolioApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -39,25 +37,7 @@ class PortfolioApp extends StatelessWidget {
         scaffoldBackgroundColor: _Theme.backgroundColor,
         cardColor: _Theme.cardColor,
         textTheme: GoogleFonts.poppinsTextTheme(
-          ThemeData.dark().textTheme.copyWith(
-                bodyLarge: const TextStyle(color: _Theme.textColor),
-                bodyMedium: const TextStyle(color: _Theme.textColor),
-                headlineLarge: const TextStyle(
-                  fontSize: 60,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-                headlineMedium: const TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
-                titleLarge: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
+          ThemeData.dark().textTheme,
         ),
       ),
       home: const PortfolioHome(),
@@ -70,16 +50,17 @@ class PortfolioHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: const Text('amith.'),
         centerTitle: false,
-        actions: [],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 32.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -96,43 +77,50 @@ class PortfolioHome extends StatelessWidget {
               },
               child: Text(
                 'Amith',
-                style: Theme.of(context).textTheme.headlineLarge,
+                style: TextStyle(
+                  fontSize: screenWidth < 600 ? 36 : 60,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
             ),
             const SizedBox(height: 8),
             Text(
               'Mobile App Developer',
-              style: Theme.of(context).textTheme.headlineMedium,
+              style: TextStyle(
+                fontSize: screenWidth < 600 ? 20 : 32,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
             ),
             const SizedBox(height: 16),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 40.0),
-              child: Text(
+            Padding(
+              padding:
+                  EdgeInsets.symmetric(horizontal: screenWidth < 600 ? 16 : 80),
+              child: const Text(
                 'Crafting exceptional mobile experiences with Android Native, React Native, and Flutter',
                 textAlign: TextAlign.center,
                 style: TextStyle(color: _Theme.textColor),
               ),
             ),
             const SizedBox(height: 40),
+
             // Stats Section
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            Wrap(
+              spacing: 20,
+              runSpacing: 20,
+              alignment: WrapAlignment.center,
               children: const [
                 StatCard(
-                  icon: Icons.article_outlined,
-                  value: '2+',
-                  label: 'Apps Published',
-                ),
+                    icon: Icons.article_outlined,
+                    value: '2+',
+                    label: 'Apps Published'),
                 StatCard(
-                  icon: Icons.cloud_download_outlined,
-                  value: '1M+',
-                  label: 'Total Downloads',
-                ),
+                    icon: Icons.cloud_download_outlined,
+                    value: '100k+',
+                    label: 'Total Downloads'),
                 StatCard(
-                  icon: Icons.star_border,
-                  value: '4.5',
-                  label: 'App Rating',
-                ),
+                    icon: Icons.star_border, value: '4.1', label: 'App Rating'),
               ],
             ),
             const SizedBox(height: 40),
@@ -141,10 +129,9 @@ class PortfolioHome extends StatelessWidget {
             const Text(
               'Featured Apps',
               style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
             ).animate().fadeIn(delay: 500.ms, duration: 800.ms),
             const SizedBox(height: 15),
             const FeaturedAppsSection()
@@ -156,10 +143,9 @@ class PortfolioHome extends StatelessWidget {
             const Text(
               'Development Process',
               style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
             ).animate().fadeIn(delay: 500.ms, duration: 800.ms),
             const SizedBox(height: 8),
             const Text(
@@ -203,7 +189,8 @@ class PortfolioHome extends StatelessWidget {
   }
 }
 
-// Reusable Widgets
+// ================= REUSABLE WIDGETS ===================
+
 class StatCard extends StatelessWidget {
   final IconData icon;
   final String value;
@@ -218,136 +205,98 @@ class StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Icon(icon, size: 28, color: _Theme.accentColor),
-            const SizedBox(height: 8),
-            Text(
-              value,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge
-                  ?.copyWith(color: _Theme.accentColor),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: const TextStyle(color: _Theme.textColor),
-            ),
-          ],
+    return SizedBox(
+      width: 180,
+      child: Card(
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Icon(icon, size: 28, color: _Theme.accentColor),
+              const SizedBox(height: 8),
+              Text(
+                value,
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge
+                    ?.copyWith(color: _Theme.accentColor),
+              ),
+              const SizedBox(height: 4),
+              Text(label, style: const TextStyle(color: _Theme.textColor)),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class IconWithLabel extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final double size;
-
-  const IconWithLabel({
-    super.key,
-    required this.icon,
-    required this.label,
-    this.size = 24,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, color: _Theme.accentColor, size: size),
-        const SizedBox(width: 8),
-        Text(label, style: Theme.of(context).textTheme.titleLarge),
-      ],
-    );
-  }
-}
-
-class SkillBar extends StatelessWidget {
-  final String skill;
-  final double percent;
-
-  const SkillBar({
-    super.key,
-    required this.skill,
-    required this.percent,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Text(skill,
-                  style: const TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.bold)),
-              const SizedBox(width: 8),
-            ],
-          ),
-          const SizedBox(height: 4),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: LinearProgressIndicator(
-              value: percent,
-              minHeight: 10,
-              backgroundColor: Colors.grey.shade800,
-              valueColor: const AlwaysStoppedAnimation<Color>(
-                _Theme.accentColor,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
+// ================= FEATURED APPS ===================
 
 class FeaturedAppsSection extends StatelessWidget {
   const FeaturedAppsSection({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+    return LayoutBuilder(builder: (context, constraints) {
+      bool isMobile = constraints.maxWidth < 800;
+
+      if (isMobile) {
+        return Column(
+          children: const [
             FeaturedAppItem(
-              icon: Icons.rocket_launch,
+              icon: Icons.document_scanner,
               title: 'VeloCT Onboarding',
-              subtitle: 'Loan Onboarding application',
-              isFeatured: true,
+              subtitle: 'ICICI-Aligned Digital Loan Onboarding Application',
               technologies: ['Flutter', 'Firebase'],
               rating: '4.1',
               downloads: '5K+',
               platform: 'iOS & Android',
             ),
-            SizedBox(width: 20),
+            SizedBox(height: 20),
             FeaturedAppItem(
-              icon: Icons.attach_money,
+              icon: Icons.health_and_safety,
               title: 'Ntelcare Family app',
-              subtitle: 'Older person monitoring',
-              isFeatured: false,
+              subtitle: 'IoT-Based Health Monitoring for Seniors',
               technologies: ['Flutter', 'Dart', 'Firebase', 'IOT'],
               rating: '4.0',
               downloads: '3K+',
               platform: 'iOS & Android',
             ),
           ],
-        ),
-      ],
-    );
+        );
+      }
+
+      return Row(
+        children: const [
+          Expanded(
+            child: FeaturedAppItem(
+              icon: Icons.document_scanner,
+              title: 'VeloCT Onboarding',
+              subtitle: 'ICICI-Aligned Digital Loan Onboarding Application',
+              technologies: ['Flutter', 'Firebase'],
+              rating: '4.1',
+              downloads: '5K+',
+              platform: 'iOS & Android',
+            ),
+          ),
+          SizedBox(width: 20),
+          Expanded(
+            child: FeaturedAppItem(
+              icon: Icons.health_and_safety,
+              title: 'Ntelcare Family app',
+              subtitle: 'IoT-Based Health Monitoring for Seniors',
+              technologies: ['Flutter', 'Dart', 'Firebase', 'IOT'],
+              rating: '4.0',
+              downloads: '3K+',
+              platform: 'iOS & Android',
+            ),
+          ),
+        ],
+      );
+    });
   }
 }
 
@@ -355,7 +304,6 @@ class FeaturedAppItem extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
-  final bool isFeatured;
   final List<String> technologies;
   final String rating;
   final String downloads;
@@ -366,7 +314,6 @@ class FeaturedAppItem extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.subtitle,
-    this.isFeatured = false,
     required this.technologies,
     required this.rating,
     required this.downloads,
@@ -375,125 +322,155 @@ class FeaturedAppItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Card(
-        elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: _Theme.backgroundColor,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(icon, color: _Theme.accentColor, size: 36),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Text(title,
-                                style: Theme.of(context).textTheme.titleLarge),
-                            const SizedBox(width: 8),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          subtitle,
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: _Theme.backgroundColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: _Theme.accentColor, size: 36),
               ),
-              const SizedBox(height: 16),
-              Wrap(
-                spacing: 8.0,
-                children: technologies
-                    .map((tech) => Chip(
-                          label: Text(tech),
-                          backgroundColor: _Theme.cardColor,
-                          labelStyle: const TextStyle(
-                              color: _Theme.textColor, fontSize: 10),
-                        ))
-                    .toList(),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: Theme.of(context).textTheme.titleLarge),
+                    const SizedBox(height: 4),
+                    Text(subtitle,
+                        style: Theme.of(context).textTheme.bodySmall),
+                  ],
+                ),
               ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  const Icon(Icons.star, color: _Theme.accentColor, size: 16),
-                  const SizedBox(width: 4),
-                  Text(rating, style: const TextStyle(color: Colors.white)),
-                  const SizedBox(width: 16),
-                  const Icon(Icons.cloud_download,
-                      color: _Theme.textColor, size: 16),
-                  const SizedBox(width: 4),
-                  Text(downloads,
-                      style: const TextStyle(color: _Theme.textColor)),
-                  const SizedBox(width: 16),
-                  const Icon(Icons.phone_android,
-                      color: _Theme.textColor, size: 16),
-                  const SizedBox(width: 4),
-                  Text(platform,
-                      style: const TextStyle(color: _Theme.textColor)),
-                ],
-              ),
-            ],
-          ),
+            ]),
+            const SizedBox(height: 16),
+            Wrap(
+              spacing: 8.0,
+              children: technologies
+                  .map((tech) => Chip(
+                        label: Text(tech),
+                        backgroundColor: _Theme.cardColor,
+                        labelStyle: const TextStyle(
+                            color: _Theme.textColor, fontSize: 10),
+                      ))
+                  .toList(),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                const Icon(Icons.star, color: _Theme.accentColor, size: 16),
+                const SizedBox(width: 4),
+                Text(rating, style: const TextStyle(color: Colors.white)),
+                const SizedBox(width: 16),
+                const Icon(Icons.cloud_download,
+                    color: _Theme.textColor, size: 16),
+                const SizedBox(width: 4),
+                Text(downloads,
+                    style: const TextStyle(color: _Theme.textColor)),
+                const SizedBox(width: 16),
+                const Icon(Icons.phone_android,
+                    color: _Theme.textColor, size: 16),
+                const SizedBox(width: 4),
+                Text(platform, style: const TextStyle(color: _Theme.textColor)),
+              ],
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
+// ================= DEVELOPMENT PROCESS ===================
+
 class DevelopmentProcessSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: const [
-        ProcessCard(
-          icon: Icons.lightbulb_outline,
-          title: 'Ideation & Planning',
-          steps: [
-            'Requirements gathering and market research',
-            'User flow and wireframe design',
-            'Interactive prototype development',
+    return LayoutBuilder(builder: (context, constraints) {
+      bool isMobile = constraints.maxWidth < 800;
+
+      if (isMobile) {
+        return Column(
+          children: const [
+            ProcessCard(
+              icon: Icons.lightbulb_outline,
+              title: 'Ideation & Planning',
+              steps: [
+                'Requirements gathering and market research',
+                'User flow and wireframe design',
+                'Interactive prototype development',
+              ],
+            ),
+            SizedBox(height: 20),
+            ProcessCard(
+              icon: Icons.code,
+              title: 'Development',
+              steps: [
+                'Architecture setup and tech stack selection',
+                'Agile development with regular sprints',
+                'Continuous testing and code reviews',
+              ],
+            ),
+            SizedBox(height: 20),
+            ProcessCard(
+              icon: Icons.rocket_launch,
+              title: 'Launch & Growth',
+              steps: [
+                'App store optimization and submission',
+                'Analytics integration and monitoring',
+                'Regular updates and feature enhancements',
+              ],
+            ),
           ],
-        ),
-        SizedBox(width: 20),
-        ProcessCard(
-          icon: Icons.code,
-          title: 'Development',
-          steps: [
-            'Architecture setup and tech stack selection',
-            'Agile development with regular sprints',
-            'Continuous testing and code reviews',
-          ],
-        ),
-        SizedBox(width: 20),
-        ProcessCard(
-          icon: Icons.rocket_launch,
-          title: 'Launch & Growth',
-          steps: [
-            'App store optimization and submission',
-            'Analytics integration and monitoring',
-            'Regular updates and feature enhancements',
-          ],
-        ),
-      ],
-    );
+        );
+      }
+
+      return Row(
+        children: const [
+          Expanded(
+              child: ProcessCard(
+            icon: Icons.lightbulb_outline,
+            title: 'Ideation & Planning',
+            steps: [
+              'Requirements gathering and market research',
+              'User flow and wireframe design',
+              'Interactive prototype development',
+            ],
+          )),
+          SizedBox(width: 20),
+          Expanded(
+              child: ProcessCard(
+            icon: Icons.code,
+            title: 'Development',
+            steps: [
+              'Architecture setup and tech stack selection',
+              'Agile development with regular sprints',
+              'Continuous testing and code reviews',
+            ],
+          )),
+          SizedBox(width: 20),
+          Expanded(
+              child: ProcessCard(
+            icon: Icons.rocket_launch,
+            title: 'Launch & Growth',
+            steps: [
+              'App store optimization and submission',
+              'Analytics integration and monitoring',
+              'Regular updates and feature enhancements',
+            ],
+          )),
+        ],
+      );
+    });
   }
 }
 
@@ -511,251 +488,238 @@ class ProcessCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Card(
-        elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: _Theme.devProcessBackground,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(icon, color: _Theme.devProcessIcon, size: 36),
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: _Theme.devProcessBackground,
+                borderRadius: BorderRadius.circular(12),
               ),
-              const SizedBox(height: 16),
-              Text(title, style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: 16),
-              ...List.generate(
-                steps.length,
-                (index) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('${index + 1}.',
-                          style: const TextStyle(color: _Theme.accentColor)),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(steps[index],
-                            style: const TextStyle(color: _Theme.textColor)),
-                      ),
-                    ],
-                  ),
+              child: Icon(icon, color: _Theme.devProcessIcon, size: 36),
+            ),
+            const SizedBox(height: 16),
+            Text(title, style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: 16),
+            ...List.generate(
+              steps.length,
+              (index) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('${index + 1}.',
+                        style: const TextStyle(color: _Theme.accentColor)),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(steps[index],
+                          style: const TextStyle(color: _Theme.textColor)),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-class ContactFormSection extends StatelessWidget {
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _messageController = TextEditingController();
+// ================= CONTACT SECTION ===================
 
+class ContactFormSection extends StatelessWidget {
+  ContactFormSection({super.key});
+
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController messageController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      return Padding(
-        padding: EdgeInsets.symmetric(
-            horizontal: constraints.maxWidth > 1000 ? 400 : 16),
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    return Padding(
+        padding:
+            EdgeInsets.symmetric(horizontal: screenWidth > 1000 ? 400 : 16),
         child: Form(
           key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              TextFormField(
-                  controller: _nameController,
-                  maxLines: 1,
-                  decoration: InputDecoration(
-                    hintText: "Name",
-                    hintStyle: const TextStyle(color: _Theme.textColor),
-                    filled: true,
-                    fillColor: _Theme.cardColor,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Please Enter The Name";
-                    }
-                  }),
-              const SizedBox(height: 16),
-              TextFormField(
-                  controller: _emailController,
-                  maxLines: 1,
-                  decoration: InputDecoration(
-                    hintText: "Email",
-                    hintStyle: const TextStyle(color: _Theme.textColor),
-                    filled: true,
-                    fillColor: _Theme.cardColor,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Please Enter The Email";
-                    }
-                  }),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _messageController,
-                maxLines: 4,
-                decoration: InputDecoration(
-                  hintText: "Message",
-                  hintStyle: const TextStyle(color: _Theme.textColor),
-                  filled: true,
-                  fillColor: _Theme.cardColor,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide.none,
-                  ),
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+            TextFormField(
+              controller: nameController,
+              maxLines: 1,
+              decoration: InputDecoration(
+                hintText: "Name",
+                hintStyle: const TextStyle(color: _Theme.textColor),
+                filled: true,
+                fillColor: _Theme.cardColor,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide.none,
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Please Enter The Message";
+              ),
+              validator: (value) => value == null || value.isEmpty
+                  ? "Please Enter The Name"
+                  : null,
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: emailController,
+              maxLines: 1,
+              decoration: InputDecoration(
+                hintText: "Email",
+                hintStyle: const TextStyle(color: _Theme.textColor),
+                filled: true,
+                fillColor: _Theme.cardColor,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+              validator: (value) => value == null || value.isEmpty
+                  ? "Please Enter The Email"
+                  : null,
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: messageController,
+              maxLines: 4,
+              decoration: InputDecoration(
+                hintText: "Message",
+                hintStyle: const TextStyle(color: _Theme.textColor),
+                filled: true,
+                fillColor: _Theme.cardColor,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+              validator: (value) => value == null || value.isEmpty
+                  ? "Please Enter The Message"
+                  : null,
+            ),
+            const SizedBox(height: 24),
+            Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [_Theme.headlineColor2, _Theme.headlineColor1],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: ElevatedButton(
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    try {
+                      await FirebaseFirestore.instance
+                          .collection('user_responses')
+                          .add({
+                        'name': nameController.text,
+                        'email': emailController.text,
+                        'message': messageController.text,
+                        'timestamp': FieldValue.serverTimestamp(),
+                      });
+
+                      nameController.clear();
+                      emailController.clear();
+                      messageController.clear();
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text("Message Sent Successfully")),
+                      );
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Error: $e")),
+                      );
+                    }
                   }
                 },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8)),
+                ),
+                child: const Text("Send Message",
+                    style: TextStyle(color: Colors.white)),
               ),
-              const SizedBox(height: 24),
-              Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [_Theme.headlineColor2, _Theme.headlineColor1],
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                  ),
+            ),
+            const SizedBox(height: 20),
+            OutlinedButton(
+              onPressed: () {
+                _launchUrl(
+                    "https://github.com/amithe05/my_portfolio/raw/main/assets/Amith.E - Flutter Developer.pdf");
+              },
+              style: OutlinedButton.styleFrom(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                side: const BorderSide(color: _Theme.textColor, width: 1),
+                shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: ElevatedButton(
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      try {
-                        await FirebaseFirestore.instance
-                            .collection('user_responses')
-                            .add({
-                          'name': _nameController.text,
-                          'mail': _emailController.text,
-                          'message': _messageController.text,
-                          'timestamp': FieldValue.serverTimestamp(),
-                        });
-
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text('Response saved successfully!')),
-                        );
-                        _nameController.clear();
-                        _messageController.clear();
-                        _emailController.clear();
-                      } on FirebaseException catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                              content: Text('Error saving data: ${e.message}')),
-                        );
-                      }
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    shadowColor: Colors.transparent,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: const Text('Send Message',
-                      style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold)),
-                ),
               ),
-              const SizedBox(height: 20),
-              OutlinedButton(
-                onPressed: () {
-                  _launchUrl(
-                      "https://github.com/amithe05/my_portfolio/raw/main/assets/Amith.E - Flutter Developer.pdf");
-                },
-                style: OutlinedButton.styleFrom(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                  side: const BorderSide(color: _Theme.textColor, width: 1),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+              child: const Text('View Resume',
+                  style: TextStyle(color: _Theme.textColor)),
+            ),
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () => _launchUrl("https://github.com/amithe05"),
+                  child: Image.asset(
+                    "github.png",
+                    height: 50,
+                    width: 50,
                   ),
                 ),
-                child: const Text('View Resume',
-                    style: TextStyle(color: _Theme.textColor)),
-              ),
-              const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  GestureDetector(
-                    onTap: () => _launchUrl("https://github.com/amithe05"),
-                    child: Image.asset(
-                      "github.png",
-                      height: 50,
-                      width: 50,
-                    ),
+                GestureDetector(
+                  onTap: () => _launchUrl(
+                      "https://www.linkedin.com/in/amith-e-103687234/"),
+                  child: Image.asset(
+                    "linkedin.png",
+                    height: 40,
+                    width: 40,
                   ),
-                  GestureDetector(
-                    onTap: () => _launchUrl(
-                        "https://www.linkedin.com/in/amith-e-103687234/"),
-                    child: Image.asset(
-                      "linkedin.png",
-                      height: 40,
-                      width: 40,
-                    ),
+                ),
+                GestureDetector(
+                  onTap: () => _launchUrl("https://x.com/amithe05"),
+                  child: Image.asset(
+                    "twitter.png",
+                    height: 50,
+                    width: 50,
                   ),
-                  GestureDetector(
-                    onTap: () => _launchUrl("https://x.com/amithe05"),
-                    child: Image.asset(
-                      "twitter.png",
-                      height: 50,
-                      width: 50,
-                    ),
-                  ),
-                ],
-              )
-            ],
-          ),
-        ),
-      );
-    });
+                ),
+              ],
+            ),
+          ]),
+        ));
   }
 }
 
 class LocationInfo extends StatelessWidget {
   final String location;
-
   const LocationInfo({super.key, required this.location});
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Icon(Icons.location_on_outlined,
-            color: _Theme.textColor, size: 16),
-        const SizedBox(width: 8),
-        Text(location, style: const TextStyle(color: _Theme.textColor)),
-      ],
-    );
+    return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+      const Icon(Icons.location_on, color: _Theme.accentColor, size: 16),
+      const SizedBox(width: 4),
+      Text(location, style: const TextStyle(color: _Theme.textColor)),
+    ]);
   }
 }
 
