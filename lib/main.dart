@@ -680,7 +680,7 @@ class ContactFormSection extends StatelessWidget {
                 GestureDetector(
                   onTap: () => _launchUrl("https://github.com/amithe05"),
                   child: Image.asset(
-                    "github.png",
+                    "assets/github.png",
                     height: 50,
                     width: 50,
                   ),
@@ -689,7 +689,7 @@ class ContactFormSection extends StatelessWidget {
                   onTap: () => _launchUrl(
                       "https://www.linkedin.com/in/amith-e-103687234/"),
                   child: Image.asset(
-                    "linkedin.png",
+                    "assets/linkedin.png",
                     height: 40,
                     width: 40,
                   ),
@@ -697,7 +697,7 @@ class ContactFormSection extends StatelessWidget {
                 GestureDetector(
                   onTap: () => _launchUrl("https://x.com/amithe05"),
                   child: Image.asset(
-                    "twitter.png",
+                    "assets/twitter.png",
                     height: 50,
                     width: 50,
                   ),
