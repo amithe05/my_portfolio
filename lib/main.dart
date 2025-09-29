@@ -5,11 +5,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'firebase_options.dart';
+import 'package:flutter_driver/driver_extension.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(PortfolioApp());
+  runApp(const PortfolioApp());
 }
 
 class _Theme {
@@ -19,8 +19,7 @@ class _Theme {
   static const Color headlineColor2 = Color(0xFF5E8BFF);
   static const Color accentColor = Color(0xFF67B0FF);
   static const Color textColor = Color(0xFF9CA3AF);
-  static const Color skillColor1 = Color(0xFF9F7CE0);
-  static const Color skillColor2 = Color(0xFF5E8BFF);
+
   static const Color devProcessIcon = Color(0xFFC7E2FF);
   static const Color devProcessBackground = Color(0xFF181524);
 }
@@ -59,130 +58,134 @@ class PortfolioHome extends StatelessWidget {
         title: const Text('amith.'),
         centerTitle: false,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 32.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Header Section
-            const Text('Hi, I\'m', style: TextStyle(color: _Theme.textColor)),
-            const SizedBox(height: 8),
-            ShaderMask(
-              shaderCallback: (Rect bounds) {
-                return const LinearGradient(
-                  colors: [_Theme.headlineColor1, _Theme.headlineColor2],
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                ).createShader(bounds);
-              },
-              child: Text(
-                'Amith',
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 32.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Header Section
+              const Text('Hi, I\'m', style: TextStyle(color: _Theme.textColor)),
+              const SizedBox(height: 8),
+              ShaderMask(
+                shaderCallback: (Rect bounds) {
+                  return const LinearGradient(
+                    colors: [_Theme.headlineColor1, _Theme.headlineColor2],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                  ).createShader(bounds);
+                },
+                child: Text(
+                  'Amith',
+                  style: TextStyle(
+                    fontSize: screenWidth < 600 ? 36 : 60,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Mobile App Developer',
                 style: TextStyle(
-                  fontSize: screenWidth < 600 ? 36 : 60,
-                  fontWeight: FontWeight.bold,
+                  fontSize: screenWidth < 600 ? 20 : 32,
+                  fontWeight: FontWeight.w600,
                   color: Colors.white,
                 ),
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Mobile App Developer',
-              style: TextStyle(
-                fontSize: screenWidth < 600 ? 20 : 32,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
+              const SizedBox(height: 16),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: screenWidth < 600 ? 16 : 80),
+                child: const Text(
+                  'Crafting exceptional mobile experiences with Android Native, React Native, and Flutter',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: _Theme.textColor),
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            Padding(
-              padding:
-                  EdgeInsets.symmetric(horizontal: screenWidth < 600 ? 16 : 80),
-              child: const Text(
-                'Crafting exceptional mobile experiences with Android Native, React Native, and Flutter',
+              const SizedBox(height: 40),
+
+              // Stats Section
+              const Wrap(
+                spacing: 20,
+                runSpacing: 20,
+                alignment: WrapAlignment.center,
+                children: [
+                  StatCard(
+                      icon: Icons.article_outlined,
+                      value: '2+',
+                      label: 'Apps Published'),
+                  StatCard(
+                      icon: Icons.cloud_download_outlined,
+                      value: '100k+',
+                      label: 'Total Downloads'),
+                  StatCard(
+                      icon: Icons.star_border,
+                      value: '4.1',
+                      label: 'App Rating'),
+                ],
+              ),
+              const SizedBox(height: 40),
+
+              // Featured Apps Section
+              const Text(
+                'Featured Apps',
+                style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
+              ).animate().fadeIn(delay: 500.ms, duration: 800.ms),
+              const SizedBox(height: 15),
+              const FeaturedAppsSection()
+                  .animate()
+                  .fadeIn(delay: 600.ms, duration: 800.ms),
+              const SizedBox(height: 60),
+
+              // Development Process Section
+              const Text(
+                'Development Process',
+                style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
+              ).animate().fadeIn(delay: 500.ms, duration: 800.ms),
+              const SizedBox(height: 8),
+              const Text(
+                'A systematic approach to building exceptional mobile applications',
                 textAlign: TextAlign.center,
                 style: TextStyle(color: _Theme.textColor),
-              ),
-            ),
-            const SizedBox(height: 40),
+              ).animate().fadeIn(delay: 600.ms, duration: 800.ms),
+              const SizedBox(height: 40),
+              DevelopmentProcessSection()
+                  .animate()
+                  .fadeIn(delay: 700.ms, duration: 800.ms),
+              const SizedBox(height: 60),
 
-            // Stats Section
-            Wrap(
-              spacing: 20,
-              runSpacing: 20,
-              alignment: WrapAlignment.center,
-              children: const [
-                StatCard(
-                    icon: Icons.article_outlined,
-                    value: '2+',
-                    label: 'Apps Published'),
-                StatCard(
-                    icon: Icons.cloud_download_outlined,
-                    value: '100k+',
-                    label: 'Total Downloads'),
-                StatCard(
-                    icon: Icons.star_border, value: '4.1', label: 'App Rating'),
-              ],
-            ),
-            const SizedBox(height: 40),
-
-            // Featured Apps Section
-            const Text(
-              'Featured Apps',
-              style: TextStyle(
+              // Contact Section
+              const Text(
+                'Let\'s Create Amazing Mobile Experiences',
+                style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white),
-            ).animate().fadeIn(delay: 500.ms, duration: 800.ms),
-            const SizedBox(height: 15),
-            const FeaturedAppsSection()
-                .animate()
-                .fadeIn(delay: 600.ms, duration: 800.ms),
-            const SizedBox(height: 60),
-
-            // Development Process Section
-            const Text(
-              'Development Process',
-              style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
-            ).animate().fadeIn(delay: 500.ms, duration: 800.ms),
-            const SizedBox(height: 8),
-            const Text(
-              'A systematic approach to building exceptional mobile applications',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: _Theme.textColor),
-            ).animate().fadeIn(delay: 600.ms, duration: 800.ms),
-            const SizedBox(height: 40),
-            DevelopmentProcessSection()
-                .animate()
-                .fadeIn(delay: 700.ms, duration: 800.ms),
-            const SizedBox(height: 60),
-
-            // Contact Section
-            const Text(
-              'Let\'s Create Amazing Mobile Experiences',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: _Theme.headlineColor1,
-              ),
-            ).animate().fadeIn(delay: 500.ms, duration: 800.ms),
-            const SizedBox(height: 16),
-            const Text(
-              'Ready to bring your mobile app idea to life? I specialize in creating polished, user-friendly mobile applications that deliver exceptional experiences.',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: _Theme.textColor),
-            ).animate().fadeIn(delay: 600.ms, duration: 800.ms),
-            const SizedBox(height: 16),
-            const LocationInfo(location: 'Chennai, India')
-                .animate()
-                .fadeIn(delay: 700.ms, duration: 800.ms),
-            const SizedBox(height: 40),
-            ContactFormSection()
-                .animate()
-                .fadeIn(delay: 800.ms, duration: 800.ms),
-          ],
+                  color: _Theme.headlineColor1,
+                ),
+              ).animate().fadeIn(delay: 500.ms, duration: 800.ms),
+              const SizedBox(height: 16),
+              const Text(
+                'Ready to bring your mobile app idea to life? I specialize in creating polished, user-friendly mobile applications that deliver exceptional experiences.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: _Theme.textColor),
+              ).animate().fadeIn(delay: 600.ms, duration: 800.ms),
+              const SizedBox(height: 16),
+              const LocationInfo(location: 'Chennai, India')
+                  .animate()
+                  .fadeIn(delay: 700.ms, duration: 800.ms),
+              const SizedBox(height: 40),
+              ContactFormSection()
+                  .animate()
+                  .fadeIn(delay: 800.ms, duration: 800.ms),
+            ],
+          ),
         ),
       ),
     );
@@ -244,8 +247,8 @@ class FeaturedAppsSection extends StatelessWidget {
       bool isMobile = constraints.maxWidth < 800;
 
       if (isMobile) {
-        return Column(
-          children: const [
+        return const Column(
+          children: [
             FeaturedAppItem(
               icon: Icons.document_scanner,
               title: 'VeloCT Onboarding',
@@ -269,8 +272,8 @@ class FeaturedAppsSection extends StatelessWidget {
         );
       }
 
-      return Row(
-        children: const [
+      return const Row(
+        children: [
           Expanded(
             child: FeaturedAppItem(
               icon: Icons.document_scanner,
@@ -399,8 +402,8 @@ class DevelopmentProcessSection extends StatelessWidget {
       bool isMobile = constraints.maxWidth < 800;
 
       if (isMobile) {
-        return Column(
-          children: const [
+        return const Column(
+          children: [
             ProcessCard(
               icon: Icons.lightbulb_outline,
               title: 'Ideation & Planning',
@@ -434,8 +437,8 @@ class DevelopmentProcessSection extends StatelessWidget {
         );
       }
 
-      return Row(
-        children: const [
+      return const Row(
+        children: [
           Expanded(
               child: ProcessCard(
             icon: Icons.lightbulb_outline,
@@ -534,12 +537,20 @@ class ProcessCard extends StatelessWidget {
 
 // ================= CONTACT SECTION ===================
 
-class ContactFormSection extends StatelessWidget {
-  ContactFormSection({super.key});
+class ContactFormSection extends StatefulWidget {
+  const ContactFormSection({super.key});
 
+  @override
+  State<ContactFormSection> createState() => _ContactFormSectionState();
+}
+
+class _ContactFormSectionState extends State<ContactFormSection> {
   final TextEditingController nameController = TextEditingController();
+
   final TextEditingController emailController = TextEditingController();
+
   final TextEditingController messageController = TextEditingController();
+
   final _formKey = GlobalKey<FormState>();
 
   @override
